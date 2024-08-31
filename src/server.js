@@ -3,19 +3,29 @@ import userRouter from "./routes/userRouter.js";
 import taskRouter from "./routes/taskRouter.js";
 import dotenv from 'dotenv';
 import authMiddleware from "./middlewares/authMiddleware.js";
+import connectToDB from "./utils/db.js";
 
 dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5012;
 
 app.use(express.json());
-app.use(authMiddleware);
 
 app.use('/api/auth', userRouter);
+
+app.use(authMiddleware);
 app.use('/api/tasks' ,taskRouter);
 
-app.listen(PORT, () => {
-    console.log("Server has been started")
-});
+async function startApp () {
+    try {
+        await connectToDB();
+        app.listen(PORT, () => {
+            console.log("Server has been started");
+        });
+    }catch (e) {
+        console.log(e);
+    }
+}
+startApp();
