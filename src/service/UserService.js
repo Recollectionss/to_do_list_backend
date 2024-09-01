@@ -2,7 +2,7 @@ import User from "../models/user.js";
 import bcrypt from "bcrypt";
 
 class UserService {
-    async create (username,password){
+    async registry (username,password){
         const userExisting = await User.findOne({username});
         if(userExisting){
             throw new Error("User already exist.")

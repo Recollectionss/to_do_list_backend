@@ -3,7 +3,8 @@ import userRouter from "./routes/userRouter.js";
 import taskRouter from "./routes/taskRouter.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import connectToDB from "./utils/db.js";
-
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 
 const PORT = 5012;

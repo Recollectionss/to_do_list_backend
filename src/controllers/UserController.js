@@ -10,9 +10,9 @@ class UserController {
                 return res.status(400).json({ message: "Username and password are required" });
             }
 
-            await UserService.create(username,password);
+            const user =await UserService.registry(username,password);
 
-            res.status(200).json({message:"User has been created!"});
+            res.status(200).json({message:"User has been created!",user});
         }catch (e) {
             res.status(500).json({message : e.message});
         }
@@ -25,7 +25,7 @@ class UserController {
 
             const token = generateToken(user);
 
-            res.status(200).json({token});
+            res.status(200).json({token,user});
         }catch (e){
             res.status(500).json({message: e.message});
         }
