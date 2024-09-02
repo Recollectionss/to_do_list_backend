@@ -1,7 +1,7 @@
 import {Router} from "express";
 import TaskController from "../controllers/TaskController.js";
 
-const taskRouter = Router();
+const taskRouter = new Router();
 
 taskRouter.post("/",TaskController.create);
 taskRouter.get("/",TaskController.getAll);
