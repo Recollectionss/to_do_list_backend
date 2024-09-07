@@ -1,6 +1,4 @@
-import Task from "../models/Task.js";
 import TaskService from "../service/TaskService.js";
-import taskService from "../service/TaskService.js";
 
 class TaskController {
     async create (req,res){

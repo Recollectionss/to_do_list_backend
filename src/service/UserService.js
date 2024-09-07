@@ -1,5 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import {generateAccessToken} from "../utils/generateTokens.js";
 
 class UserService {
     async registry (username,password){
@@ -25,6 +27,22 @@ class UserService {
             throw new Error("Invalid username or password.")
         }
         return findUser;
+    }
+
+    async refreshToken (refreshToken){
+        if (!refreshToken){
+            throw new Error("Refresh token is required");
+        }
+
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+        const user = await User.findOne({refreshToken});
+
+        if(!user){
+            throw new Error("Invalid refresh token")
+        }
+
+        return generateAccessToken(user);
     }
 }
 

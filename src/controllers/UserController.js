@@ -1,5 +1,5 @@
 import UserService from "../service/UserService.js";
-import {generateToken} from "../utils/generateToken.js";
+import {generateAccessToken, generateRefreshToken} from "../utils/generateTokens.js";
 
 class UserController {
     async registry (req,res){
@@ -10,9 +10,9 @@ class UserController {
                 return res.status(400).json({ message: "Username and password are required" });
             }
 
-            const user =await UserService.registry(username,password);
+            await UserService.registry(username,password);
 
-            res.status(200).json({message:"User has been created!",user});
+            res.status(200);
         }catch (e) {
             res.status(500).json({message : e.message});
         }
@@ -23,14 +23,39 @@ class UserController {
             const {username,password} = req.body;
             const user = await UserService.login(username,password);
 
-            const token = generateToken(user);
+            const accessToken = generateAccessToken(user);
+            const refreshToken = generateRefreshToken(user);
 
-            res.status(200).json({token,user});
+            user.refreshToken = refreshToken;
+            await user.save();
+
+            res.status(200).json({
+                user,
+                accessToken,
+                refreshToken,
+            });
+
         }catch (e){
             res.status(500).json({message: e.message});
         }
-
     }
+
+    async refreshToken(req,res){
+        try{
+            const accessToken =await UserService.refreshToken(req.body);
+
+            res.status(200).json({accessToken});
+
+        }catch (e) {
+            if (e.name === 'TokenExpiredError') {
+                return res.status(403).json({ message: "Refresh token expired, please login again" });
+            } else if (e.name === 'JsonWebTokenError') {
+                return res.status(403).json({ message: "Invalid refresh token" });
+            }
+            res.status(500).json({message: e.message});
+        }
+    }
+
 }
 
 export default new UserController();
